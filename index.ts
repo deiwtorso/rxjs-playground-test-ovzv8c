@@ -14,14 +14,10 @@ const section$ = new BehaviorSubject<'a' | 'b' | 'all'>('all');
 const theme$ = new BehaviorSubject<'first' | 'second'>('first');
 
 const themeSection$ = theme$.pipe(tap((_) => section$.next('all')));
-
 const sectionPage$ = section$.pipe(tap((_) => page$.next(0)));
 
 const data$ = combineLatest([page$, sectionPage$, themeSection$]).pipe(
-  filter((arr) => {
-    if (arr[1] !== section$.value || arr[2] !== theme$.value) return false;
-    return true;
-  })
+  filter((arr) => !(arr[1] !== section$.value || arr[2] !== theme$.value))
 );
 
 themeEvent$.subscribe(() => {
