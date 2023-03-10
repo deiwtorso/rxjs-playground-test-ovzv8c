@@ -1,5 +1,5 @@
-import { BehaviorSubject, combineLatest, filter, fromEvent } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, fromEvent } from 'rxjs';
+import { tap, filter } from 'rxjs/operators';
 
 const themeButton = document.getElementById('1');
 const sectionButton = document.getElementById('2');
