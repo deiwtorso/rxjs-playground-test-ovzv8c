@@ -1,5 +1,5 @@
 import { BehaviorSubject, combineLatest, filter, fromEvent } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
 
 const themeButton = document.getElementById('1');
 const sectionButton = document.getElementById('2');
@@ -17,7 +17,9 @@ const themeSection$ = theme$.pipe(tap((_) => section$.next('all')));
 const sectionPage$ = section$.pipe(tap((_) => page$.next(0)));
 
 const data$ = combineLatest([page$, sectionPage$, themeSection$]).pipe(
-  filter((arr) => !(arr[1] !== section$.value || arr[2] !== theme$.value))
+  filter(
+    ([, section, theme]) => section == section$.value && theme == theme$.value
+  )
 );
 
 themeEvent$.subscribe(() => {
