@@ -1,5 +1,5 @@
 import { BehaviorSubject, combineLatest, filter, fromEvent } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 
 const themeButton = document.getElementById('1');
 const sectionButton = document.getElementById('2');
@@ -13,19 +13,9 @@ const page$ = new BehaviorSubject<number>(0);
 const section$ = new BehaviorSubject<'a' | 'b' | 'all'>('all');
 const theme$ = new BehaviorSubject<'first' | 'second'>('first');
 
-const themeSection$ = theme$.pipe(
-  map((count) => {
-    section$.next('all');
-    return count;
-  })
-);
+const themeSection$ = theme$.pipe(tap((_) => section$.next('all')));
 
-const sectionPage$ = section$.pipe(
-  map((count) => {
-    page$.next(0);
-    return count;
-  })
-);
+const sectionPage$ = section$.pipe(tap((_) => page$.next(0)));
 
 const data$ = combineLatest([page$, sectionPage$, themeSection$]).pipe(
   filter((arr) => {
