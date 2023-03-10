@@ -1,6 +1,11 @@
-"compilerOptions": {
-  "lib": [
-    "es2018",
-    "dom"
-  ]
+{
+  "compilerOptions": {
+    "module": "esnext",
+    "noImplicitAny": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "lib": ["es6", "dom", "es2017"]
+  }
 }
