@@ -1,22 +1,5 @@
-import {
-  BehaviorSubject,
-  combineLatest,
-  concat,
-  forkJoin,
-  fromEvent,
-  iif,
-  merge,
-  zip,
-} from 'rxjs';
-import {
-  distinctUntilChanged,
-  first,
-  map,
-  mergeAll,
-  share,
-  take,
-  withLatestFrom,
-} from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, filter, fromEvent } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 const themeButton = document.getElementById('1');
 const sectionButton = document.getElementById('2');
@@ -26,69 +9,30 @@ const themeEvent$ = fromEvent(themeButton, 'click');
 const sectionEvent$ = fromEvent(sectionButton, 'click');
 const pageEvent$ = fromEvent(pageButton, 'click');
 
-const theme$ = new BehaviorSubject<'first' | 'second'>('first');
-const section$ = new BehaviorSubject<'a' | 'b' | 'all'>('all');
 const page$ = new BehaviorSubject<number>(0);
+const section$ = new BehaviorSubject<'a' | 'b' | 'all'>('all');
+const theme$ = new BehaviorSubject<'first' | 'second'>('first');
 
-const themeSection$ = combineLatest(theme$, section$).pipe(
+const themeSection$ = theme$.pipe(
   map((count) => {
     section$.next('all');
-    page$.next(0);
-    return count[0];
+    return count;
   })
 );
 
-// const sectionPage$ = zip(section$, page$).pipe(
-//   map((count) => {
-//     page$.next(0);
-//     return count;
-//   })
-// );
-
-const sectionPage$ = combineLatest(section$).pipe(
+const sectionPage$ = section$.pipe(
   map((count) => {
     page$.next(0);
-    return count[0];
+    return count;
   })
 );
 
-// const sectionPage$ = concat(section$,page$).pipe(
-//   map((count) => {
-//     page$.next(0);
-//     return count;
-//   })
-// );
-
-const data$ = page$.pipe(
-  withLatestFrom(
-    sectionPage$.pipe(
-      withLatestFrom(theme$)
-      // map((arr) => {
-      //   return [...arr];
-      // })
-    )
-  ),
-  map((arr) => {
-    return [arr[0], ...arr[1]];
+const data$ = combineLatest([page$, sectionPage$, themeSection$]).pipe(
+  filter((arr) => {
+    if (arr[1] !== section$.value || arr[2] !== theme$.value) return false;
+    return true;
   })
 );
-// let data$ = combineLatest(sectionPage$, page$)
-// let data$ = combineLatest(themeSection$, sectionPage$, page$)
-//   .pipe
-// distinctUntilChanged((prev, curr) => {
-//   // console.log(prev, curr);
-//   let booleans: boolean[] = [];
-//   prev.forEach((val, idx, arr) => {
-//     booleans.push(val !== curr[idx]);
-//   });
-//   if (
-//     booleans.includes(true) &&
-//     booleans.indexOf(true) === booleans.lastIndexOf(true)
-//   )
-//     return false;
-//   return true;
-// })
-// ();
 
 themeEvent$.subscribe(() => {
   if (theme$.value === 'first') theme$.next('second');
